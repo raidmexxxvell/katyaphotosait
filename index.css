@@ -1,0 +1,14 @@
+/* Custom project styles - overrides for Tailwind utilities */
+
+/* (Removed global .px-6 override) If you want to change specific components, prefer updating classNames in JSX to use px-4 instead of px-6. */
+
+/* Small accessibility helpers for BeforeAfter control */
+.beforeafter-handle:focus {
+  outline: 2px solid rgba(255,255,255,0.6);
+  outline-offset: 2px;
+}
+
+/* Ensure images in BeforeAfter don't inherit border-radius from parent unless desired */
+.beforeafter-container img {
+  border-radius: 0 !important;
+}
