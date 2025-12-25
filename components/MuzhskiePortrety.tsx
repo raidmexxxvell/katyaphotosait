@@ -1,17 +1,32 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ImageModal from './ImageModal';
 
 const images = Array.from({ length: 9 }, (_, i) => `https://picsum.photos/seed/m${i+1}/600/800?grayscale`);
 
 const MuzhskiePortrety: React.FC = () => {
-  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
-  const openFullscreen = (imageSrc: string) => {
-    setFullscreenImage(imageSrc);
+  const openFullscreen = (index: number) => {
+    setCurrentIndex(index);
   };
 
   const closeFullscreen = () => {
-    setFullscreenImage(null);
+    setCurrentIndex(null);
+  };
+
+  const onPrev = () => {
+    setCurrentIndex((i) => {
+      if (i == null) return i;
+      return (i + images.length - 1) % images.length;
+    });
+  };
+
+  const onNext = () => {
+    setCurrentIndex((i) => {
+      if (i == null) return i;
+      return (i + 1) % images.length;
+    });
   };
 
  return (
@@ -19,11 +34,17 @@ const MuzhskiePortrety: React.FC = () => {
        <h1 className="text-center text-4xl md:text-5xl font-serif font-light uppercase tracking-widest mb-12 md:mb-16">Мужские портреты</h1>
       <div className="grid grid-cols-1 grid-cols-3 gap-4 md:gap-6">
         {images.map((src, index) => (
-          <div key={index} className="overflow-hidden cursor-pointer" onClick={() => openFullscreen(src)}>
+          <div key={index} className="overflow-hidden cursor-pointer" onClick={() => openFullscreen(index)}>
             <img 
               src={src} 
               alt={`Male portrait ${index + 1}`} 
-              className="w-full h-full object-cover transform transition-transform duration-500 ease-in-out hover:scale-105"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover bg-gray-800 opacity-0 transform transition-transform transition-opacity duration-500 ease-in-out hover:scale-105"
+              onLoad={(e) => {
+                e.currentTarget.classList.remove('opacity-0');
+                e.currentTarget.classList.add('opacity-100');
+              }}
             />
           </div>
         ))}
@@ -45,7 +66,13 @@ const MuzhskiePortrety: React.FC = () => {
           <img 
             src="https://picsum.photos/seed/female/1000/1200?grayscale" 
             alt="Женские портреты"
-            className="w-full h-full object-cover transform transition-transform duration-50 ease-in-out group-hover:scale-105" 
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover bg-gray-800 opacity-0 transform transition-transform transition-opacity duration-50 ease-in-out group-hover:scale-105" 
+            onLoad={(e) => {
+              e.currentTarget.classList.remove('opacity-0');
+              e.currentTarget.classList.add('opacity-100');
+            }}
           />
           <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300"></div>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -56,27 +83,14 @@ const MuzhskiePortrety: React.FC = () => {
         </Link>
       </div>
       
-      {/* Fullscreen Image Modal */}
-      {fullscreenImage && (
-        <div 
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={closeFullscreen}
-        >
-          <div className="relative max-w-6xl max-h-full">
-            <img 
-              src={fullscreenImage} 
-              alt="Fullscreen view"
-              className="max-w-full max-h-full object-contain"
-            />
-            <button
-              className="absolute top-4 right-4 text-white text-3xl font-bold hover:text-gray-30"
-              onClick={closeFullscreen}
-              aria-label="Close fullscreen"
-            >
-              &times;
-            </button>
-          </div>
-        </div>
+      {currentIndex != null && (
+        <ImageModal
+          images={images}
+          currentIndex={currentIndex}
+          onClose={closeFullscreen}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
       )}
     </div>
   );

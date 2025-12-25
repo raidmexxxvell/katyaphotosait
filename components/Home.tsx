@@ -30,7 +30,18 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4" style={{ gridAutoRows: 'minmax(200px, auto)' }}>
                     {images.map((image, index) => (
                         <div key={index} className={`${image.colSpan} ${image.rowSpan}`}>
-                            <img src={image.src} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover" />
+                                                        <img
+                                                            src={image.src}
+                                                            alt={`Gallery image ${index + 1}`}
+                                                            loading={index === 0 ? 'eager' : 'lazy'}
+                                                            decoding="async"
+                                                            fetchPriority={index === 0 ? 'high' : 'auto'}
+                                                            className="w-full h-full object-cover bg-gray-800 opacity-0 transition-opacity duration-300"
+                                                            onLoad={(e) => {
+                                                                e.currentTarget.classList.remove('opacity-0');
+                                                                e.currentTarget.classList.add('opacity-100');
+                                                            }}
+                                                        />
                         </div>
                     ))}
                 </div>

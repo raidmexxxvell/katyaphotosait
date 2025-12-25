@@ -12,7 +12,13 @@ const About: React.FC = () => {
               <img
                 src="https://picsum.photos/800/1000?grayscale"
                 alt="Katya"
-                className="w-full h-auto object-cover"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto object-cover bg-gray-800 opacity-0 transition-opacity duration-300"
+                onLoad={(e) => {
+                  e.currentTarget.classList.remove('opacity-0');
+                  e.currentTarget.classList.add('opacity-100');
+                }}
               />
             </div>
             <div className="w-full lg:w-1/2 text-center lg:text-left">

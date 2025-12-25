@@ -23,7 +23,13 @@ const Portfolio: React.FC = () => {
             <img 
               src={category.image} 
               alt={category.title}
-              className="w-full h-full object-cover transform transition-transform duration-500 ease-in-out group-hover:scale-105" 
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover bg-gray-800 opacity-0 transform transition-transform transition-opacity duration-500 ease-in-out group-hover:scale-105" 
+              onLoad={(e) => {
+                e.currentTarget.classList.remove('opacity-0');
+                e.currentTarget.classList.add('opacity-100');
+              }}
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300"></div>
             <div className="absolute inset-0 flex items-center justify-center">

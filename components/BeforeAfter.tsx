@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
 
 type BeforeAfterProps = {
   beforeSrc: string;
@@ -12,33 +12,54 @@ type BeforeAfterProps = {
 
 const BeforeAfter: React.FC<BeforeAfterProps> = ({ beforeSrc, afterSrc, alt = '', initial = 50, outerClassName = 'w-full max-w-lg mx-auto my-6', containerClassName = 'relative w-full h-72 bg-black overflow-hidden rounded-md' }) => {
   const [percent, setPercent] = useState<number>(initial);
+  const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const draggingRef = useRef(false);
+  const rafRef = useRef<number | null>(null);
+
+  const scheduleSetPercent = useMemo(() => {
+    return (nextPercent: number) => {
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      rafRef.current = requestAnimationFrame(() => {
+        setPercent(nextPercent);
+      });
+    };
+  }, []);
+
+  const beforeImageStyle = useMemo(() => {
+    return {
+      clipPath: `inset(0 ${100 - percent}% 0 0)`,
+      ...(isDragging ? { willChange: 'clip-path' as const } : {}),
+    };
+  }, [percent, isDragging]);
 
   // allow dragging on the image (touch/mouse)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    let dragging = false;
-
     const setFromEvent = (clientX: number) => {
       const rect = el.getBoundingClientRect();
       const x = clientX - rect.left;
       const p = Math.max(0, Math.min(1, x / rect.width));
-      setPercent(Math.round(p * 100));
+      scheduleSetPercent(Math.round(p * 100));
     };
 
     const onDown = (e: PointerEvent) => {
       (e.target as Element).setPointerCapture?.(e.pointerId);
-      dragging = true;
+      draggingRef.current = true;
+      setIsDragging(true);
       setFromEvent(e.clientX);
     };
     const onUp = (e: PointerEvent) => {
-      dragging = false;
+      draggingRef.current = false;
+      setIsDragging(false);
       try { (e.target as Element).releasePointerCapture?.(e.pointerId); } catch {}
     };
     const onMove = (e: PointerEvent) => {
-      if (!dragging) return;
+      if (!draggingRef.current) return;
       setFromEvent(e.clientX);
     };
 
@@ -51,8 +72,12 @@ const BeforeAfter: React.FC<BeforeAfterProps> = ({ beforeSrc, afterSrc, alt = ''
       el.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointermove', onMove);
+
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
-  }, []);
+  }, [scheduleSetPercent]);
 
   return (
     <div className={outerClassName}>
@@ -85,14 +110,16 @@ const BeforeAfter: React.FC<BeforeAfterProps> = ({ beforeSrc, afterSrc, alt = ''
         }}
       >
         {/* base (right) image - stays static */}
-        <img src={afterSrc} alt={alt} className="absolute inset-0 w-full h-full object-cover" />
+        <img src={afterSrc} alt={alt} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
 
         {/* before image overlay from left, clipped via clip-path so image stays full-size (no scaling) */}
         <img
           src={beforeSrc}
           alt={alt}
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ clipPath: `inset(0 ${100 - percent}% 0 0)`, willChange: 'clip-path' }}
+          style={beforeImageStyle}
         />
 
         {/* vertical divider line */}
