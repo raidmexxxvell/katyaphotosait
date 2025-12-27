@@ -7,7 +7,6 @@ import WhatsappIcon from './icons/WhatsappIcon';
 
 const navLinks = [
   { path: '/', title: 'Главная' },
-  { path: '/o-moey-fotografii', title: 'О моей фотографии' },
   { path: '/portfolio', title: 'Портфолио' },
   { path: '/services', title: 'Стоимость' },
   { path: '/presety', title: 'Пресеты' },
@@ -31,7 +30,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 p-6 md:p-8 bg-brand-dark/80 backdrop-blur-sm">
+      <header className="fixed top-0 left-0 right-0 z-40 p-6 md:p-2 bg-brand-dark/80 backdrop-blur-sm">
         <div className="container mx-auto flex justify-between items-center">
           <Link to="/" onClick={handleNavClick} className="text-xl md:text-2xl font-serif font-medium tracking-widest uppercase focus:outline-none transition-colors hover:text-white">
             Katya
@@ -70,7 +69,7 @@ const Header: React.FC = () => {
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="container mx-auto p-6 md:p-8 flex justify-end">
+        <div className="container mx-auto p-6 md:p-2 flex justify-end">
           <button onClick={() => setIsMenuOpen(false)} aria-label="Close menu" className="text-brand-light">
             <CloseIcon className="w-8 h-8"/>
           </button>

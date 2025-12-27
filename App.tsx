@@ -6,7 +6,6 @@ import ScrollToTopButton from './components/ScrollToTopButton';
 import { LoadingFallback } from './components/LoadingFallback';
 
 const Home = React.lazy(() => import('./components/Home'));
-const About = React.lazy(() => import('./components/About'));
 const Portfolio = React.lazy(() => import('./components/Portfolio'));
 const PriceList = React.lazy(() => import('./components/PriceList'));
 const Presets = React.lazy(() => import('./components/Presets'));
@@ -42,7 +41,6 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="o-moey-fotografii" element={<About />} />
         <Route path="portfolio" element={<Portfolio />} />
         <Route path="zhenskie-portrety" element={<ZhenskiePortrety />} />
         <Route path="muzhskie-portrety" element={<MuzhskiePortrety />} />

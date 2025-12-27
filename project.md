@@ -76,7 +76,6 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="o-moey-fotografii" element={<About />} />
         {/* ... другие маршруты */}
       </Route>
     </Routes>
